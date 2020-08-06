@@ -1,0 +1,6 @@
+[
+    {
+        "depth_path": "test/<image_name>.png",
+        "rgb_path": "test/<image_name>.png"
+    }
+]
