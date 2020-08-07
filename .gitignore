@@ -3,3 +3,5 @@
 *.png
 *.pyc
 *.vscode
+train.txt
+val.txt
