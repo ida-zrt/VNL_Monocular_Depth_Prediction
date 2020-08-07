@@ -17,14 +17,16 @@ __C = AttrDict()
 cfg = __C
 
 # Root directory of project
-__C.ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+__C.ROOT_DIR = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # ---------------------------------------------------------------------------- #
 # Data configurations
 # ---------------------------------------------------------------------------- #
 __C.DATASET = AttrDict()
 __C.DATASET.NAME = 'nyu'
-__C.DATASET.RGB_PIXEL_MEANS = (0.485, 0.456, 0.406)  # (102.9801, 115.9465, 122.7717)
+__C.DATASET.RGB_PIXEL_MEANS = (0.485, 0.456, 0.406
+                               )  # (102.9801, 115.9465, 122.7717)
 __C.DATASET.RGB_PIXEL_VARS = (0.229, 0.224, 0.225)  # (1, 1, 1)
 # Scale the depth map
 __C.DATASET.DEPTH_SCALE = 10.0
@@ -37,13 +39,13 @@ __C.DATASET.DEPTH_MAX = 1.0
 __C.DATASET.DEPTH_MIN_LOG = np.log10(__C.DATASET.DEPTH_MIN)
 # Minimum depth in log space
 # Interval of each bin
-__C.DATASET.DEPTH_BIN_INTERVAL = None
+__C.DATASET.DEPTH_BIN_INTERVAL = 2.3 / 50
 # The boundary of each bin
 __C.DATASET.DEPTH_BIN_BORDER = None
-__C.DATASET.WCE_LOSS_WEIGHT = None
+__C.DATASET.WCE_LOSS_WEIGHT = 0.2
 # Camera Parameters
-__C.DATASET.FOCAL_X = 1.0
-__C.DATASET.FOCAL_Y = 1.0
+__C.DATASET.FOCAL_X = 2.1624e+03
+__C.DATASET.FOCAL_Y = 2.1531e+03
 
 # ---------------------------------------------------------------------------- #
 # Models configurations
@@ -127,15 +129,18 @@ def merge_cfg_from_file(train_args):
     _merge_a_into_b(yaml_cfg, __C)
     __C.DATASET.DEPTH_MIN_LOG = np.log10(__C.DATASET.DEPTH_MIN)
     # Modify some configs
-    __C.DATASET.DEPTH_BIN_INTERVAL = (np.log10(__C.DATASET.DEPTH_MAX) - np.log10(
-        __C.DATASET.DEPTH_MIN)) / __C.MODEL.DECODER_OUTPUT_C
+    __C.DATASET.DEPTH_BIN_INTERVAL = (
+        np.log10(__C.DATASET.DEPTH_MAX) -
+        np.log10(__C.DATASET.DEPTH_MIN)) / __C.MODEL.DECODER_OUTPUT_C
 
     # The boundary of each bin
-    __C.DATASET.DEPTH_BIN_BORDER = np.array(
-        [np.log10(__C.DATASET.DEPTH_MIN) + __C.DATASET.DEPTH_BIN_INTERVAL * (i + 0.5)
-         for i in range(__C.MODEL.DECODER_OUTPUT_C)])
-    __C.DATASET.WCE_LOSS_WEIGHT = [[np.exp(-0.2 * (i - j) ** 2) for i in range(__C.MODEL.DECODER_OUTPUT_C)]
-                                   for j in np.arange(__C.MODEL.DECODER_OUTPUT_C)]
+    __C.DATASET.DEPTH_BIN_BORDER = np.array([
+        np.log10(__C.DATASET.DEPTH_MIN) + __C.DATASET.DEPTH_BIN_INTERVAL *
+        (i + 0.5) for i in range(__C.MODEL.DECODER_OUTPUT_C)
+    ])
+    __C.DATASET.WCE_LOSS_WEIGHT = [[
+        np.exp(-0.2 * (i - j)**2) for i in range(__C.MODEL.DECODER_OUTPUT_C)
+    ] for j in np.arange(__C.MODEL.DECODER_OUTPUT_C)]
 
     for k, v in vars(train_args).items():
         if k.upper() in __C.TRAIN.keys():
@@ -231,6 +236,5 @@ def _check_and_coerce_cfg_value_type(value_a, value_b, key, full_key):
     else:
         raise ValueError(
             'Type mismatch ({} vs. {}) with values ({} vs. {}) for config '
-            'key: {}'.format(type_b, type_a, value_b, value_a, full_key)
-        )
+            'key: {}'.format(type_b, type_a, value_b, value_a, full_key))
     return value_a
