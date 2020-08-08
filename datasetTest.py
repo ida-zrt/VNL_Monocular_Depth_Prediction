@@ -27,5 +27,6 @@ if __name__ == '__main__':
 
     train_dataloader = CustomerDataLoader(train_args)
 
+    merge_cfg_from_file(train_args)
     for data in train_dataloader:
         print(type(data))
