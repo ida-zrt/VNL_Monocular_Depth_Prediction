@@ -46,6 +46,7 @@ __C.DATASET.WCE_LOSS_WEIGHT = 0.2
 # Camera Parameters
 __C.DATASET.FOCAL_X = 2.1624e+03
 __C.DATASET.FOCAL_Y = 2.1531e+03
+__C.DATASET.OPTICAL_CENTER = (1.25654e+03, 7.719e+02)
 
 # ---------------------------------------------------------------------------- #
 # Models configurations

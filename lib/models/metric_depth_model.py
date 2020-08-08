@@ -19,7 +19,10 @@ class MetricDepthModel(nn.Module):
         # Input data is a_real, predicted data is b_fake, groundtruth is b_real
         self.a_real = data['A'].cuda()
         self.b_fake_logit, self.b_fake_softmax = self.depth_model(self.a_real)
-        return {'b_fake_logit': self.b_fake_logit, 'b_fake_softmax': self.b_fake_softmax}
+        return {
+            'b_fake_logit': self.b_fake_logit,
+            'b_fake_softmax': self.b_fake_softmax
+        }
 
     def inference(self, data):
         with torch.no_grad():
@@ -51,7 +54,9 @@ class MetricDepthModel(nn.Module):
             _, b_r_classes = self.depth_model(self.a_r_real)
             self.b_r_fake = bins_to_depth(b_r_classes)
 
-            out = kitti_merge_imgs(self.b_l_fake, self.b_m_fake, self.b_r_fake, torch.squeeze(data['B_raw']).shape, data['crop_lmr'])
+            out = kitti_merge_imgs(self.b_l_fake, self.b_m_fake, self.b_r_fake,
+                                   torch.squeeze(data['B_raw']).shape,
+                                   data['crop_lmr'])
             return {'b_fake': out}
 
 
@@ -59,11 +64,17 @@ class ModelLoss(object):
     def __init__(self):
         super(ModelLoss, self).__init__()
         self.weight_cross_entropy_loss = WCEL_Loss()
-        self.virtual_normal_loss = VNL_Loss(focal_x=cfg.DATASET.FOCAL_X, focal_y=cfg.DATASET.FOCAL_Y, input_size=cfg.DATASET.CROP_SIZE)
+        self.virtual_normal_loss = VNL_Loss(
+            focal_x=cfg.DATASET.FOCAL_X,
+            focal_y=cfg.DATASET.FOCAL_Y,
+            input_size=cfg.DATASET.CROP_SIZE,
+            optical_center=cfg.DATASET.OPTICAL_CENTER)
 
     def criterion(self, pred_softmax, pred_logit, data, epoch):
         pred_depth = bins_to_depth(pred_softmax)
-        loss_metric = self.weight_cross_entropy_loss(pred_logit, data['B_bins'], data['B'].cuda())
+        loss_metric = self.weight_cross_entropy_loss(pred_logit,
+                                                     data['B_bins'],
+                                                     data['B'].cuda())
         loss_normal = self.virtual_normal_loss(data['B'].cuda(), pred_depth)
 
         loss = {}
@@ -98,14 +109,19 @@ class ModelOptimizer(object):
         weight_decay = 0.0005
 
         net_params = [
-            {'params': encoder_params,
-             'lr': lr_encoder,
-             'weight_decay': weight_decay},
-            {'params': decoder_params,
-             'lr': lr_decoder,
-             'weight_decay': weight_decay},
-            ]
+            {
+                'params': encoder_params,
+                'lr': lr_encoder,
+                'weight_decay': weight_decay
+            },
+            {
+                'params': decoder_params,
+                'lr': lr_decoder,
+                'weight_decay': weight_decay
+            },
+        ]
         self.optimizer = torch.optim.SGD(net_params, momentum=0.9)
+
     def optim(self, loss):
         self.optimizer.zero_grad()
         loss_all = loss['total_loss']
@@ -122,7 +138,8 @@ class DepthModel(nn.Module):
 
     def forward(self, x):
         lateral_out, encoder_stage_size = self.encoder_modules(x)
-        out_logit, out_softmax = self.decoder_modules(lateral_out, encoder_stage_size)
+        out_logit, out_softmax = self.decoder_modules(lateral_out,
+                                                      encoder_stage_size)
         return out_logit, out_softmax
 
 
