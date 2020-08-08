@@ -35,7 +35,7 @@ class VNL_Loss(nn.Module):
         self.delta_diff_z = delta_diff_z  # after being determined by real distance in reality
         self.z_thres = z_thres  # threshold for filtering out invalid depths
 
-        self.sample_ratio = sample_ratio  # sampling ratio, increase it if you have too many invalid depth
+        self.sample_ratio = sample_ratio  # sampling ratio
         self.only_valid = only_valid
 
     def init_image_coor(self):
