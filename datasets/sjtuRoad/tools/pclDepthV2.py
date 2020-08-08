@@ -9,8 +9,8 @@ from utils.depthConversion import *
 import numpy as np
 
 # global settings
-display_depth = False
-save_depth = True
+display_depth = True
+save_depth = False
 save_depth_c = False
 pause = False
 maxDepth = 280
@@ -18,8 +18,9 @@ outputSize = (2560, 768)
 outputRoi = (0, 0, 2560, 768)
 
 # 标定文件
-calib_path = './20200622_122024_autoware_lidar_camera_calibration.yaml'
-extrisicFile = './calibResult.dat'
+calib_path = './calibfiles/20200622_122024_autoware_lidar_camera_calibration.yaml'
+# extrisicFile = './calibResult.dat'
+extrisicFile = './calibfiles/20200806_130338_lidar_cam_calib.yaml'
 
 # 数据文件夹
 dataDirs = glob.glob('../data*')
@@ -27,13 +28,22 @@ dataDirs = glob.glob('../data*')
 fs = cv.FileStorage(calib_path, cv.FILE_STORAGE_READ)
 cameraMat = fs.getNode('CameraMat').mat()
 distCoeff = fs.getNode('DistCoeff').mat()
-with open(extrisicFile, 'rb') as f:
-    rvec, tvec = pickle.load(f)
+fs.release()
+if extrisicFile.endswith('.dat'):
+    with open(extrisicFile, 'rb') as f:
+        rvec, tvec = pickle.load(f)
+else:
+    fs = cv.FileStorage(extrisicFile, cv.FILE_STORAGE_READ)
+    rvec = fs.getNode('rvec').mat()
+    tvec = fs.getNode('tvec').mat()
+    fs.release()
 
 # 图像的大小, 不知道怎么从yaml中读取, 直接拷贝的
 imgSize = (2560, 1536)
-
+k = 0
 for dataDir in dataDirs:
+    if k == 27:
+        break
     pcl_path = os.path.join(dataDir, 'pointCloud/')
     print('processing data in ' + pcl_path)
     clouds = glob.glob(pcl_path + '*')
