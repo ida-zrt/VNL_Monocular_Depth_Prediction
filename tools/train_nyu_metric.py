@@ -24,8 +24,16 @@ import os
 # sys.stdout = open(os.path.join(BASE_DIR, 'trains/bt4', st + '.log'), 'w')
 
 
-def train(train_dataloader, model, epoch, loss_func,
-          optimizer, scheduler, training_stats, val_dataloader=None, val_err=[], ignore_step=-1):
+def train(train_dataloader,
+          model,
+          epoch,
+          loss_func,
+          optimizer,
+          scheduler,
+          training_stats,
+          val_dataloader=None,
+          val_err=[],
+          ignore_step=-1):
     """
     Train the model in steps
     """
@@ -38,12 +46,14 @@ def train(train_dataloader, model, epoch, loss_func,
         scheduler.step()  # decay lr every iteration
         training_stats.IterTic()
         out = model(data)
-        losses = loss_func.criterion(out['b_fake_softmax'], out['b_fake_logit'], data, epoch)
+        losses = loss_func.criterion(out['b_fake_softmax'],
+                                     out['b_fake_logit'], data, epoch)
         optimizer.optim(losses)
         step = base_steps + i + 1
         training_stats.UpdateIterStats(losses)
         training_stats.IterToc()
-        training_stats.LogIterStats(step, epoch, optimizer.optimizer, val_err[0])
+        training_stats.LogIterStats(step, epoch, optimizer.optimizer,
+                                    val_err[0])
 
         # validate the model
         if step % cfg.TRAIN.VAL_STEP == 0 and step != 0 and val_dataloader is not None:
@@ -54,7 +64,11 @@ def train(train_dataloader, model, epoch, loss_func,
 
         # save checkpoint
         if step % cfg.TRAIN.SNAPSHOT_ITERS == 0 and step != 0:
-            save_ckpt(train_args, step, epoch, model, optimizer.optimizer, scheduler, val_err[0])
+            save_ckpt(train_args, step, epoch, model, optimizer.optimizer,
+                      scheduler, val_err[0])
+
+    save_ckpt(train_args, step, epoch, model, optimizer.optimizer, scheduler,
+              val_err[0])
 
 
 def val(val_dataloader, model):
@@ -67,14 +81,17 @@ def val(val_dataloader, model):
         invalid_side = data['invalid_side'][0]
         out = model.module.inference(data)
         pred_depth = torch.squeeze(out['b_fake'])
-        pred_depth = pred_depth[invalid_side[0]:pred_depth.size(0) - invalid_side[1], :]
+        pred_depth = pred_depth[invalid_side[0]:pred_depth.size(0) -
+                                invalid_side[1], :]
         pred_depth = pred_depth / data['ratio'].cuda()
-        pred_depth = resize_image(pred_depth, torch.squeeze(data['B_raw']).shape)
-        smoothed_criteria = validate_err(pred_depth, data['B_raw'], smoothed_criteria, (45, 471, 41, 601))
+        pred_depth = resize_image(pred_depth,
+                                  torch.squeeze(data['B_raw']).shape)
+        smoothed_criteria = validate_err(pred_depth, data['B_raw'],
+                                         smoothed_criteria, (45, 471, 41, 601))
     return {'abs_rel': smoothed_criteria['err_absRel'].GetGlobalAverageValue()}
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     # Train args
     train_opt = TrainOptions()
     train_args = train_opt.parse()
@@ -104,11 +121,13 @@ if __name__=='__main__':
         tblogger = SummaryWriter(cfg.TRAIN.LOG_DIR)
 
     # training status for logging
-    training_stats = TrainingStats(train_args, cfg.TRAIN.LOG_INTERVAL,
-                                   tblogger if train_args.use_tfboard else None)
+    training_stats = TrainingStats(
+        train_args, cfg.TRAIN.LOG_INTERVAL,
+        tblogger if train_args.use_tfboard else None)
 
     # total iterations
-    total_iters = math.ceil(train_datasize / train_args.batchsize) * train_args.epoch
+    total_iters = math.ceil(
+        train_datasize / train_args.batchsize) * train_args.epoch
     cfg.TRAIN.MAX_ITER = total_iters
     cfg.TRAIN.GPU_NUM = gpu_num
 
@@ -128,28 +147,33 @@ if __name__=='__main__':
     val_err = [{'abs_rel': 0}]
     ignore_step = -1
 
-    lr_optim_lambda = lambda iter: (1.0 - iter / (float(total_iters))) ** 0.9
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer.optimizer, lr_lambda=lr_optim_lambda)
+    lr_optim_lambda = lambda iter: (1.0 - iter / (float(total_iters)))**0.9
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer.optimizer,
+                                                  lr_lambda=lr_optim_lambda)
 
     # load checkpoint
     if train_args.load_ckpt:
         load_ckpt(train_args, model, optimizer.optimizer, scheduler, val_err)
-        ignore_step = train_args.start_step - train_args.start_epoch * math.ceil(train_datasize / train_args.batchsize)
+        ignore_step = train_args.start_step - train_args.start_epoch * math.ceil(
+            train_datasize / train_args.batchsize)
 
     if gpu_num != -1:
         model = torch.nn.DataParallel(model)
     try:
         for epoch in range(train_args.start_epoch, train_args.epoch):
             # training
-            train(train_dataloader, model, epoch, loss_func, optimizer, scheduler, training_stats,
-                  val_dataloader, val_err, ignore_step)
+            train(train_dataloader, model, epoch, loss_func, optimizer,
+                  scheduler, training_stats, val_dataloader, val_err,
+                  ignore_step)
             ignore_step = -1
 
     except (RuntimeError, KeyboardInterrupt):
-
         logger.info('Save ckpt on exception ...')
+        save_ckpt(train_args, 0, epoch, model, optimizer.optimizer, scheduler,
+                  val_err[0])
         stack_trace = traceback.format_exc()
         print(stack_trace)
+
     finally:
         if train_args.use_tfboard:
             tblogger.close()
