@@ -18,7 +18,7 @@ class roadDataset():
         self.dir_anno = os.path.join(cfg.ROOT_DIR, opt.dataroot, 'annotations',
                                      opt.phase_anno + '.txt')
         self.getDataPaths()
-        self.uniform_size = (384, 640)
+        self.uniform_size = (768, 2560)
 
     def getDataPaths(self):
         with open(self.dir_anno, 'r') as load_f:
