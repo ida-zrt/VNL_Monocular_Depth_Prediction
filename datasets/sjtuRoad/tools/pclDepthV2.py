@@ -14,13 +14,24 @@ save_depth = True
 save_depth_c = False
 pause = False
 maxDepth = 280
-outputSize = (640, 384)
+outputSize = (2560, 768)
+outputRoi = (0, 0, 2560, 768)
 
 # 标定文件
 calib_path = './20200622_122024_autoware_lidar_camera_calibration.yaml'
 extrisicFile = './calibResult.dat'
 
+# 数据文件夹
 dataDirs = glob.glob('../data*')
+# 读取标定的信息
+fs = cv.FileStorage(calib_path, cv.FILE_STORAGE_READ)
+cameraMat = fs.getNode('CameraMat').mat()
+distCoeff = fs.getNode('DistCoeff').mat()
+with open(extrisicFile, 'rb') as f:
+    rvec, tvec = pickle.load(f)
+
+# 图像的大小, 不知道怎么从yaml中读取, 直接拷贝的
+imgSize = (2560, 1536)
 
 for dataDir in dataDirs:
     pcl_path = os.path.join(dataDir, 'pointCloud/')
@@ -43,16 +54,6 @@ for dataDir in dataDirs:
         if not os.path.exists(compare_path):
             os.makedirs(compare_path)
 
-    # 读取标定的信息
-    fs = cv.FileStorage(calib_path, cv.FILE_STORAGE_READ)
-    cameraMat = fs.getNode('CameraMat').mat()
-    distCoeff = fs.getNode('DistCoeff').mat()
-    with open(extrisicFile, 'rb') as f:
-        rvec, tvec = pickle.load(f)
-
-    # 图像的大小, 不知道怎么从yaml中读取, 直接拷贝的
-    imgSize = (2560, 1536)
-
     for cloud in clouds:
         cloudPts = pcl.load(cloud).to_array()
         depthImg = getDepthFromCloud(cloudPts, rvec, tvec, cameraMat,
@@ -72,6 +73,8 @@ for dataDir in dataDirs:
             coloredDepthImg, cv.getStructuringElement(cv.MORPH_ELLIPSE,
                                                       (3, 3)))
         compareImg = cv.addWeighted(img, 0.3, coloredDepthImgD, 1, 0)
+        x, y, w, h = outputRoi
+        compareImg = compareImg[y:y + h, x:x + w]
 
         if display_depth:
             print('Comparing depth and rgb files: {}'.format(
@@ -96,11 +99,14 @@ for dataDir in dataDirs:
                 pause = not pause
 
         if save_depth:
+            x, y, w, h = outputRoi
+            img = img[y:y + h, x:x + w]
             img = cv.resize(img, outputSize)
             cv.imwrite(pic.replace('frame', 'pic'), img)
             fname = cloud.replace('pointCloud', 'depth')
             fname = fname.replace('pcd', 'png')
             fname = fname.replace('No.', 'depth')
+            depthImg = depthImg[y:y + h, x:x + w]
             depthImg = cv.resize(depthImg, outputSize)
             cv.imwrite(fname, depthImg)
             print("{} saved!!".format(fname))
