@@ -25,7 +25,7 @@ DATASET:
   DEPTH_SCALE: 60000.0
   CROP_SIZE: (768, 1280) # (height, width)
   # Minimum depth after data augmentation
-  DEPTH_MIN: 0.01
+  DEPTH_MIN: 0.005
   # Maximum depth
   DEPTH_MAX: 1.0
   FOCAL_Y: 2.1531e+03

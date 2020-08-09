@@ -14,7 +14,7 @@ class roadDataset():
     def initialize(self, opt):
         self.opt = opt
         self.root = opt.dataroot
-        self.maxDepth = 60000
+        self.maxDepth = 65536
         self.dir_anno = os.path.join(cfg.ROOT_DIR, opt.dataroot, 'annotations',
                                      opt.phase_anno + '.txt')
         self.getDataPaths()
