@@ -81,8 +81,8 @@ def val(val_dataloader, model):
     for i, data in enumerate(val_dataloader):
         invalid_side = data['invalid_side'][0]
         out = model.module.inference(data)
-        pred_depth = torch.squeeze(out['b_fake'])
-        pred_depth = pred_depth[invalid_side[0]:pred_depth.size(0) -
+        pred_depth = out['b_fake']
+        pred_depth = pred_depth[:, :, invalid_side[0]:pred_depth.size(0) -
                                 invalid_side[1], :]
         pred_depth = pred_depth / data['ratio'].cuda()
         # pred_depth = resize_image(pred_depth,
