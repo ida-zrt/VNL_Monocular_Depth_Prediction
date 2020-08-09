@@ -12,16 +12,8 @@ from tools.parse_arg_val import ValOptions
 logger = setup_logging(__name__)
 
 
-def train(train_dataloader,
-          model,
-          epoch,
-          loss_func,
-          optimizer,
-          scheduler,
-          training_stats,
-          val_dataloader=None,
-          val_err=[],
-          ignore_step=-1):
+def train(train_dataloader, model, epoch, loss_func,
+          optimizer, scheduler, training_stats, val_dataloader=None, val_err=[], ignore_step=-1):
     model.train()
     epoch_steps = math.ceil(len(train_dataloader) / cfg.TRAIN.BATCH_SIZE)
     base_steps = epoch_steps * epoch + ignore_step if ignore_step != -1 else epoch_steps * epoch
@@ -31,26 +23,23 @@ def train(train_dataloader,
         scheduler.step()  # decay lr every iteration
         training_stats.IterTic()
         out = model(data)
-        losses = loss_func.criterion(out['b_fake'], out['b_fake_nosoftmax'],
-                                     data, epoch)
+        losses = loss_func.criterion(out['b_fake'], out['b_fake_nosoftmax'], data, epoch)
         optimizer.optim(losses)
 
         step = base_steps + i + 1
         training_stats.UpdateIterStats(losses)
         training_stats.IterToc()
-        training_stats.LogIterStats(step, epoch, optimizer.optimizer,
-                                    val_err[0])
+        training_stats.LogIterStats(step, epoch, optimizer.optimizer, val_err[0])
 
         # validate the model
-        if step % cfg.TRAIN.VAL_STEP == 0 and step != 0 and val_dataloader is not None:  #
+        if step % cfg.TRAIN.VAL_STEP == 0 and step != 0 and val_dataloader is not None:#
             model.eval()
             val_err[0] = val_kitti(val_dataloader, model)
             # training mode
             model.train()
         # save checkpoint
         if step % cfg.TRAIN.SNAPSHOT_ITERS == 0 and step != 0:
-            save_ckpt(train_args, step, epoch, model, optimizer.optimizer,
-                      scheduler, val_err[0])
+            save_ckpt(train_args, step, epoch, model, optimizer.optimizer, scheduler, val_err[0])
 
 
 def val_kitti(val_dataloader, model):
@@ -60,29 +49,16 @@ def val_kitti(val_dataloader, model):
     smoothed_absRel = SmoothedValue(len(val_dataloader))
     smoothed_silog = SmoothedValue(len(val_dataloader))
     smoothed_silog2 = SmoothedValue(len(val_dataloader))
-    smoothed_criteria = {
-        'err_absRel': smoothed_absRel,
-        'err_silog': smoothed_silog,
-        'err_silog2': smoothed_silog2
-    }
+    smoothed_criteria = {'err_absRel': smoothed_absRel, 'err_silog': smoothed_silog, 'err_silog2': smoothed_silog2}
     for i, data in enumerate(val_dataloader):
         pred_depth = model.module.inference_kitti(data)
-        smoothed_criteria = validate_err_kitti(pred_depth['b_fake'],
-                                               data['B_raw'],
-                                               smoothed_criteria)
-        print(
-            np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() - (
-                smoothed_criteria['err_silog'].GetGlobalAverageValue())**2))
-    return {
-        'abs_rel':
-        smoothed_criteria['err_absRel'].GetGlobalAverageValue(),
-        'silog':
-        np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() -
-                (smoothed_criteria['err_silog'].GetGlobalAverageValue())**2)
-    }
+        smoothed_criteria = validate_err_kitti(pred_depth['b_fake'], data['B_raw'], smoothed_criteria)
+        print(np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() - (smoothed_criteria['err_silog'].GetGlobalAverageValue())**2))
+    return {'abs_rel': smoothed_criteria['err_absRel'].GetGlobalAverageValue(),
+            'silog': np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() - (smoothed_criteria['err_silog'].GetGlobalAverageValue())**2)}
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
 
     # Train args
     train_opt = TrainOptions()
@@ -99,7 +75,7 @@ if __name__ == '__main__':
     train_dataloader = CustomerDataLoader(train_args)
     train_datasize = len(train_dataloader)
     gpu_num = torch.cuda.device_count()
-    merge_cfg_from_file(train_args)
+    merge_cfg_from_file(train_datasize, gpu_num)
 
     val_dataloader = CustomerDataLoader(val_args)
     val_datasize = len(val_dataloader)
@@ -113,13 +89,11 @@ if __name__ == '__main__':
         tblogger = SummaryWriter(cfg.TRAIN.LOG_DIR)
 
     # training status for logging
-    training_stats = TrainingStats(
-        train_args, cfg.TRAIN.LOG_INTERVAL,
-        tblogger if train_args.use_tfboard else None)
+    training_stats = TrainingStats(train_args, cfg.TRAIN.LOG_INTERVAL,
+                                   tblogger if train_args.use_tfboard else None)
 
     # total iterations
-    total_iters = math.ceil(
-        train_datasize / train_args.batchsize) * train_args.epoch
+    total_iters = math.ceil(train_datasize / train_args.batchsize) * train_args.epoch[-1]
     cfg.TRAIN.MAX_ITER = total_iters
     cfg.TRAIN.GPU_NUM = gpu_num
 
@@ -142,24 +116,22 @@ if __name__ == '__main__':
     ignore_step = -1
 
     # Lerning strategy
-    lr_optim_lambda = lambda iter: (1.0 - iter / (float(total_iters)))**0.9
-    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer.optimizer,
-                                                  lr_lambda=lr_optim_lambda)
+    lr_optim_lambda = lambda iter: (1.0 - iter / (float(total_iters))) ** 0.9
+    scheduler = torch.optim.lr_scheduler.LambdaLR(
+        optimizer.optimizer, lr_lambda=lr_optim_lambda)
 
     # load checkpoint
     if train_args.load_ckpt:
         load_ckpt(train_args, model, optimizer.optimizer, scheduler, val_err)
-        ignore_step = train_args.start_step - train_args.start_epoch * math.ceil(
-            train_datasize / train_args.batchsize)
+        ignore_step = train_args.start_step - train_args.start_epoch * math.ceil(train_datasize / train_args.batchsize)
 
     if gpu_num != -1:
         model = torch.nn.DataParallel(model)
     try:
         for epoch in range(train_args.start_epoch, cfg.TRAIN.EPOCH[-1]):
             # training
-            train(train_dataloader, model, epoch, loss_func, optimizer,
-                  scheduler, training_stats, val_dataloader, val_err,
-                  ignore_step)
+            train(train_dataloader, model, epoch, loss_func, optimizer, scheduler, training_stats,
+                  val_dataloader, val_err, ignore_step)
             ignore_step = -1
 
     except (RuntimeError, KeyboardInterrupt):
