@@ -29,6 +29,7 @@ def getDepthFromCloud(cloudPoints,
     print('depth mean is {} m'.format(np.mean(depth)))
     print('depth var is {} m2'.format(np.var(depth)))
     print('depth max is {} m'.format(np.max(depth)))
+    print('depth min is {} m'.format(np.min(depth[depth != 0])))
     crit = 2 * np.sqrt(np.var(depth)) + np.mean(depth)
     percent = np.sum(depth < crit) / np.sum(np.ones_like(depth))
     print('{:.2f} %% depth is below {} m'.format(percent * 100, crit))
