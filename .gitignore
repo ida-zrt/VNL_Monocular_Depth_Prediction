@@ -5,3 +5,5 @@
 *.vscode
 datasets/*
 log*
+train.txt
+test.txt
