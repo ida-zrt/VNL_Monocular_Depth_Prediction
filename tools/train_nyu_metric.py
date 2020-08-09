@@ -9,6 +9,7 @@ import math
 import traceback
 from tools.parse_arg_train import TrainOptions
 from tools.parse_arg_val import ValOptions
+from torch.nn.functional import interpolate
 
 logger = setup_logging(__name__)
 
@@ -68,7 +69,7 @@ def train(train_dataloader,
                       scheduler, val_err[0])
 
     save_ckpt(train_args, step, epoch, model, optimizer.optimizer, scheduler,
-              val_err[0])
+              val_err[0], 'final.pth')
 
 
 def val(val_dataloader, model):
@@ -84,8 +85,11 @@ def val(val_dataloader, model):
         pred_depth = pred_depth[invalid_side[0]:pred_depth.size(0) -
                                 invalid_side[1], :]
         pred_depth = pred_depth / data['ratio'].cuda()
-        pred_depth = resize_image(pred_depth,
-                                  torch.squeeze(data['B_raw']).shape)
+        # pred_depth = resize_image(pred_depth,
+        #                           torch.squeeze(data['B_raw']).shape)
+        pred_depth = interpolate(pred_depth,
+                                 torch.squeeze(data['B_raw']).shape,
+                                 mode='bilinear')
         smoothed_criteria = validate_err(pred_depth, data['B_raw'],
                                          smoothed_criteria, (45, 471, 41, 601))
     return {'abs_rel': smoothed_criteria['err_absRel'].GetGlobalAverageValue()}
@@ -170,7 +174,7 @@ if __name__ == '__main__':
     except (RuntimeError, KeyboardInterrupt):
         logger.info('Save ckpt on exception ...')
         save_ckpt(train_args, 0, epoch, model, optimizer.optimizer, scheduler,
-                  val_err[0])
+                  val_err[0], 'last.pth')
         stack_trace = traceback.format_exc()
         print(stack_trace)
 
