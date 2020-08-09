@@ -84,10 +84,12 @@ class roadDataset():
         flip_prob = np.random.uniform(0.0, 1.0)
         flip_flg = True if flip_prob > 0.5 and 'train' in self.opt.phase else False
 
+        # raw_size = np.array(
+        #     [cfg.DATASET.CROP_SIZE[1], 416, 448, 480, 512, 544, 576, 608, 640])
         raw_size = np.array(
-            [cfg.DATASET.CROP_SIZE[1], 416, 448, 480, 512, 544, 576, 608, 640])
+            [cfg.DATASET.CROP_SIZE[1], 672, 704, 736, 608, 640])
         size_index = np.random.randint(0,
-                                       9) if 'train' in self.opt.phase else 8
+                                       6) if 'train' in self.opt.phase else -1
 
         # pad
         pad_height = raw_size[size_index] - self.uniform_size[0] if raw_size[size_index] > self.uniform_size[0]\
