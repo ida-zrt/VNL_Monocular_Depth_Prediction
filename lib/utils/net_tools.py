@@ -67,6 +67,8 @@ def save_ckpt(args,
     if save_name is None:
         save_name = os.path.join(ckpt_dir,
                                  'epoch%d_step%d.pth' % (epoch, step))
+    else:
+        save_name = os.path.join(ckpt_dir, save_name)
     if isinstance(model, nn.DataParallel):
         model = model.module
     torch.save(
