@@ -61,6 +61,7 @@ class roadDataset():
         B_bins = self.depth_to_bins(B_resize)
         invalid_side = [int(pad[0] * resize_ratio), 0, 0, 0]
 
+        # A: rgb files, B: depth files
         data = {
             'A': A_resize,
             'B': B_resize,
