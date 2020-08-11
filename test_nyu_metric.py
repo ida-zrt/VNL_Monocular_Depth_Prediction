@@ -80,7 +80,7 @@ if __name__ == '__main__':
         pred_depth = np.squeeze(pred_depth)
         pred_depth_scale = (pred_depth * 65536).astype(np.uint16)
         plt.imsave(os.path.join(image_dir, 'd_colored_' + img_name), pred_depth, cmap='rainbow')
-        cv2.imwrite(os.path.join(image_dir, i.split('.')[0] + '-raw.png'), pred_depth_scale)
+        cv2.imwrite(os.path.join(image_dir, img_name.split('.')[0] + '-raw.png'), pred_depth_scale)
         #cv2.imwrite(os.path.join(image_dir, 'rgb_' + img_name), data['A_raw'].numpy().squeeze())
 
         print('processing (%04d)-th image... %s' % (i, img_path))
