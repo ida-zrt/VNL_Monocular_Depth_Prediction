@@ -94,7 +94,7 @@ __C.TRAIN.EPOCH = 100
 __C.TRAIN.MAX_ITER = 0
 # Snapshot (model checkpoint) period
 __C.TRAIN.SNAPSHOT_ITERS = 2000
-__C.TRAIN.VAL_STEP = 2000
+__C.TRAIN.VAL_STEP = 2
 __C.TRAIN.BATCHSIZE = 4
 __C.TRAIN.GPU_NUM = 1
 # Steps for LOG interval
