@@ -153,6 +153,9 @@ if __name__ == '__main__':
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer.optimizer,
                                                   lr_lambda=lr_optim_lambda)
 
+    save_ckpt(train_args, 0, 0, model, optimizer.optimizer, scheduler,
+                  val_err[0], 'random')
+
     # load checkpoint
     if train_args.load_ckpt:
         load_ckpt(train_args, model, optimizer.optimizer, scheduler, val_err)
