@@ -7,3 +7,5 @@ datasets/*
 log*
 train.txt
 test.txt
+*.pth
+

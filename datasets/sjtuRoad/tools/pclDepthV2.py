@@ -11,11 +11,11 @@ import numpy as np
 # global settings
 display_depth = True
 save_depth = False
-save_depth_c = False
-pause = False
+save_depth_c = True
+pause = True
 maxDepth = 280
-outputSize = (2560, 768)
-outputRoi = (0, 0, 2560, 768)
+outputSize = (2560, 768 * 2)
+outputRoi = (0, 0, 2560, 768 * 2)
 
 # 标定文件
 calib_path = './calibfiles/20200622_122024_autoware_lidar_camera_calibration.yaml'
@@ -108,17 +108,25 @@ for dataDir in dataDirs:
             if k == ord('p'):
                 pause = not pause
 
+        fname = cloud.replace('pointCloud', 'depth')
+        fname = fname.replace('pcd', 'png')
+        fname = fname.replace('No.', 'depth')
         if save_depth:
             x, y, w, h = outputRoi
             img = img[y:y + h, x:x + w]
             img = cv.resize(img, outputSize)
             cv.imwrite(pic.replace('frame', 'pic'), img)
-            fname = cloud.replace('pointCloud', 'depth')
-            fname = fname.replace('pcd', 'png')
-            fname = fname.replace('No.', 'depth')
             depthImg = depthImg[y:y + h, x:x + w]
             depthImg = cv.resize(depthImg, outputSize)
             cv.imwrite(fname, depthImg)
             print("{} saved!!".format(fname))
+
+        if save_depth_c:
+            fname2 = fname.replace('depth', 'depthMask')
+            cv.imwrite(fname2, depthMask)
+            fname3 = fname.replace('depth', 'depthColored')
+            cv.imwrite(fname3, coloredDepthImg)
+            fname4 = fname.replace('depth', 'compare')
+            cv.imwrite(fname4, compareImg)
 
 cv.destroyAllWindows()

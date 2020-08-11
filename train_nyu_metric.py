@@ -68,8 +68,6 @@ def train(train_dataloader,
             save_ckpt(train_args, step, epoch, model, optimizer.optimizer,
                       scheduler, val_err[0])
 
-    save_ckpt(train_args, step, epoch, model, optimizer.optimizer, scheduler,
-              val_err[0], 'final.pth')
 
 
 def val(val_dataloader, model):
@@ -170,6 +168,9 @@ if __name__ == '__main__':
                   scheduler, training_stats, val_dataloader, val_err,
                   ignore_step)
             ignore_step = -1
+        
+        save_ckpt(train_args, 0, epoch, model, optimizer.optimizer, scheduler,
+                  val_err[0], 'final')
 
     except (RuntimeError, KeyboardInterrupt):
         logger.info('Save ckpt on exception ...')

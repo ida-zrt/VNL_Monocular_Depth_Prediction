@@ -9,8 +9,8 @@ import os
 # global settings
 use_undistort = True
 display_depth = False
-save_depth = False
-save_depth_c = False
+save_depth = True
+save_depth_c = True
 compareRGBD = True
 maxDepth = 280
 
@@ -21,7 +21,7 @@ outputSize = (2560, 1536)
 # 设置标定文件, pcd文件的路径
 # calib_path = './20200804_125204_autoware_lidar_camera_calibration.yaml'
 # calib_path = './20200804_132052_autoware_lidar_camera_calibration.yaml'
-calib_path = './20200622_122024_autoware_lidar_camera_calibration.yaml'
+calib_path = './calibfiles/20200622_122024_autoware_lidar_camera_calibration.yaml'
 
 pcl_path = '../data_2020_07_31_10_46_48/pointCloud/'
 # pcl_path = '../data_2020_07_29_17_44_03/pointCloud/'
@@ -136,7 +136,7 @@ for cloud in clouds:
             img = cv.resize(img, outputSize)
             coloredDepthImg = cv.resize(coloredDepthImg, outputSize)
 
-            compare = cv.addWeighted(img, 0.3, coloredDepthImg, 1, 0)
+            compare = cv.addWeighted(img, 0.5, coloredDepthImg, 1, 0)
             print('Comparing depth and rgb files: {}'.format(
                 os.path.split(cloud)[1]))
             cv.namedWindow('compare', cv.WINDOW_KEEPRATIO)
@@ -154,22 +154,22 @@ for cloud in clouds:
         cv.imshow('depth', (depthImg))
         cv.waitKey(1)
 
+    fname = cloud.replace('pointCloud', 'depth')
+    fname = fname.replace('pcd', 'png')
+    fname = fname.replace('No.', 'depth')
     if save_depth:
         pic = cloud.replace('pointCloud', 'frame')
         pic = pic.replace('No.', 'frame')
         pic = pic.replace('.pcd', '.jpg')
 
-        img = cv.imread(pic)
+        # img = cv.imread(pic)
         img = cv.resize(img, outputSize)
         cv.imwrite(pic.replace('frame', 'pic'), img)
-        fname = cloud.replace('pointCloud', 'depth')
-        fname = fname.replace('pcd', 'png')
-        fname = fname.replace('No.', 'depth')
         depthImg = cv.resize(depthImg, outputSize)
         cv.imwrite(fname, depthImg)
         print("{} saved!!".format(fname))
 
-    if save_depth_c and save_depth:
+    if save_depth_c:
         fname2 = fname.replace('depth', 'depthMask')
         cv.imwrite(fname2, depthMask)
         fname3 = fname.replace('depth', 'depthColored')
