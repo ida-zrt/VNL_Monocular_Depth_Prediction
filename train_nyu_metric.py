@@ -149,7 +149,7 @@ if __name__ == '__main__':
     val_err = [{'abs_rel': 0}]
     ignore_step = -1
 
-    lr_optim_lambda = lambda iter: (1.0 - iter / (float(total_iters)))**0.9
+    lr_optim_lambda = lambda iter: (1.5 - iter / (float(total_iters)))**0.9
     scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer.optimizer,
                                                   lr_lambda=lr_optim_lambda)
 

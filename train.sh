@@ -8,4 +8,8 @@
 #SBATCH --gres=gpu:1
 module load anaconda3/2019.07
 source activate VNL
-python -u train_nyu_metric.py --dataroot ./datasets/sjtuRoad --dataset road --cfg_file lib/configs/mobilenet_v2_sjtuRoad_class
+python -u train_nyu_metric.py --dataroot ./datasets/sjtuRoad \
+                                --dataset road \
+                                --cfg_file lib/configs/mobilenet_v2_sjtuRoad_class \
+                                --load_ckpt ./outputs/Aug09-13-44-48_node1/ckpt/final.pth
+                                --resume

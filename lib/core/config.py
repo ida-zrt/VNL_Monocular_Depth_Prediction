@@ -90,7 +90,7 @@ __C.TRAIN.SCALE_DECODER_LR = 1
 __C.TRAIN.BASE_LR = 0.0005
 __C.TRAIN.MAX_ITER = 0
 # Set training epoches, end at the last epoch of list
-__C.TRAIN.EPOCH = 20
+__C.TRAIN.EPOCH = 100
 __C.TRAIN.MAX_ITER = 0
 # Snapshot (model checkpoint) period
 __C.TRAIN.SNAPSHOT_ITERS = 2000
