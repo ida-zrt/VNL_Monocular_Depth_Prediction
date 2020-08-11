@@ -12,6 +12,7 @@ from lib.utils.evaluate_depth_error import evaluate_err
 from lib.models.metric_depth_model import MetricDepthModel
 from lib.utils.logging import setup_logging, SmoothedValue
 import matplotlib.pyplot as plt
+import time
 
 logger = setup_logging(__name__)
 
@@ -53,6 +54,8 @@ if __name__ == '__main__':
                          'err_delta1': smoothed_delta1, 'err_delta2': smoothed_delta2, 'err_delta3': smoothed_delta3,
                          'err_log10': smoothed_log10, 'err_whdr': smoothed_whdr}
 
+    model_name = test_args.load_ckpt.split('/')[-1].split('.')[0]
+    image_dir = os.path.join(cfg.ROOT_DIR, './evaluation', time.strftime('%s'), cfg.MODEL.ENCODER, model_name)
     for i, data in enumerate(data_loader):
         out = model.module.inference(data)
         pred_depth = torch.squeeze(out['b_fake'])
@@ -71,24 +74,25 @@ if __name__ == '__main__':
         smoothed_criteria = evaluate_err(pred_depth, data['B_raw'], smoothed_criteria, scale=10.)
 
         # save images
-        model_name = test_args.load_ckpt.split('/')[-1].split('.')[0]
-        image_dir = os.path.join(cfg.ROOT_DIR, './evaluation', cfg.MODEL.ENCODER, model_name)
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
         img_name = img_path[0].split('/')[-1]
-        #plt.imsave(os.path.join(image_dir, 'd_' + img_name), pred_depth, cmap='rainbow')
+        pred_depth = pred_depth.cpu().numpy().squeeze()
+        pred_depth_scale = (pred_depth * 65536).astype(np.uint16)
+        plt.imsave(os.path.join(image_dir, 'd_colored_' + img_name), pred_depth, cmap='rainbow')
+        cv2.imwrite(os.path.join(image_dir, i.split('.')[0] + '-raw.png'), pred_depth_scale)
         #cv2.imwrite(os.path.join(image_dir, 'rgb_' + img_name), data['A_raw'].numpy().squeeze())
 
         print('processing (%04d)-th image... %s' % (i, img_path))
 
-
-    print("###############absREL ERROR: %f", smoothed_criteria['err_absRel'].GetGlobalAverageValue())
-    print("###############silog ERROR: %f", np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() - (
-        smoothed_criteria['err_silog'].GetGlobalAverageValue()) ** 2))
-    print("###############log10 ERROR: %f", smoothed_criteria['err_log10'].GetGlobalAverageValue())
-    print("###############RMS ERROR: %f", np.sqrt(smoothed_criteria['err_rms'].GetGlobalAverageValue()))
-    print("###############delta_1 ERROR: %f", smoothed_criteria['err_delta1'].GetGlobalAverageValue())
-    print("###############delta_2 ERROR: %f", smoothed_criteria['err_delta2'].GetGlobalAverageValue())
-    print("###############delta_3 ERROR: %f", smoothed_criteria['err_delta3'].GetGlobalAverageValue())
-    print("###############squaRel ERROR: %f", smoothed_criteria['err_squaRel'].GetGlobalAverageValue())
-    print("###############logRms ERROR: %f", np.sqrt(smoothed_criteria['err_logRms'].GetGlobalAverageValue()))
+    print("Evaluation result for model: {}".format(model_name))
+    print("absREL\tERROR: {}".format(smoothed_criteria['err_absRel'].GetGlobalAverageValue()))
+    print("silog\tERROR: {}".format(np.sqrt(smoothed_criteria['err_silog2'].GetGlobalAverageValue() - (
+        smoothed_criteria['err_silog'].GetGlobalAverageValue()) ** 2)))
+    print("log10\tERROR: {}".format(smoothed_criteria['err_log10'].GetGlobalAverageValue()))
+    print("RMS\tERROR: {}".format(np.sqrt(smoothed_criteria['err_rms'].GetGlobalAverageValue())))
+    print("delta_1\tERROR: {}".format(smoothed_criteria['err_delta1'].GetGlobalAverageValue()))
+    print("delta_2\tERROR: {}".format(smoothed_criteria['err_delta2'].GetGlobalAverageValue()))
+    print("delta_3\tERROR: {}".format(smoothed_criteria['err_delta3'].GetGlobalAverageValue()))
+    print("squaRel\tERROR: {}".format(smoothed_criteria['err_squaRel'].GetGlobalAverageValue()))
+    print("logRms\tERROR: {}".format(np.sqrt(smoothed_criteria['err_logRms'].GetGlobalAverageValue())))
