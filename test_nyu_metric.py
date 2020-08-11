@@ -61,7 +61,14 @@ if __name__ == '__main__':
         pred_depth = pred_depth[invalid_side[0]:pred_depth.size(0) - invalid_side[1], :]
         pred_depth = pred_depth / data['ratio'].cuda() # scale the depth
         pred_depth = resize_image(pred_depth, torch.squeeze(data['B_raw']).shape)
-        smoothed_criteria = evaluate_err(pred_depth, data['B_raw'], smoothed_criteria, mask=(45, 471, 41, 601), scale=10.)
+
+        # pred_depth = torch.unsqueeze(pred_depth,0)
+        # pred_depth = torch.unsqueeze(pred_depth,0)
+        # pred_depth = interpolate(pred_depth,
+        #                          torch.squeeze(data['B_raw']).shape,
+        #                          mode='bilinear')
+
+        smoothed_criteria = evaluate_err(pred_depth, data['B_raw'], smoothed_criteria, scale=10.)
 
         # save images
         model_name = test_args.load_ckpt.split('/')[-1].split('.')[0]
