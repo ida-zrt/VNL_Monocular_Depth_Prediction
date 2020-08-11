@@ -77,7 +77,7 @@ if __name__ == '__main__':
         if not os.path.exists(image_dir):
             os.makedirs(image_dir)
         img_name = img_path[0].split('/')[-1]
-        pred_depth = pred_depth.cpu().numpy().squeeze()
+        pred_depth = np.squeeze(pred_depth)
         pred_depth_scale = (pred_depth * 65536).astype(np.uint16)
         plt.imsave(os.path.join(image_dir, 'd_colored_' + img_name), pred_depth, cmap='rainbow')
         cv2.imwrite(os.path.join(image_dir, i.split('.')[0] + '-raw.png'), pred_depth_scale)
