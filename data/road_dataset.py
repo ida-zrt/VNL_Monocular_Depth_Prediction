@@ -87,7 +87,7 @@ class roadDataset():
         # raw_size = np.array(
         #     [cfg.DATASET.CROP_SIZE[1], 416, 448, 480, 512, 544, 576, 608, 640])
         raw_size = np.array(
-            [cfg.DATASET.CROP_SIZE[1], 672*2, 704*2, 736*2, 608*2, 640*2])
+            [cfg.DATASET.CROP_SIZE[1], 672, 704, 736, 608, 640])
         size_index = np.random.randint(0,
                                        6) if 'train' in self.opt.phase else -1
 
