@@ -42,7 +42,7 @@ def train(train_dataloader,
     epoch_steps = math.ceil(len(train_dataloader) / cfg.TRAIN.BATCHSIZE)
     base_steps = epoch_steps * epoch + ignore_step if ignore_step != -1 else epoch_steps * epoch
     for i, data in enumerate(train_dataloader):
-        if data.shape[0] == 1:
+        if data.size[0] == 1:
             print('dataError, only on in batch, continued')
             continue
         if ignore_step != -1 and i > epoch_steps - ignore_step:
