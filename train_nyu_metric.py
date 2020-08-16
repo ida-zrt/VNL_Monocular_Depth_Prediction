@@ -45,6 +45,7 @@ def train(train_dataloader,
         # if data.size[0] == 1:
         #     print('dataError, only on in batch, continued')
         #     continue
+        print(data['A'].shape)
         if data['A'].shape == 1:
             print('dataError, only 1 pic in batch, ignored')
             continue
