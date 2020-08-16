@@ -12,5 +12,5 @@ python -u train_nyu_metric.py --dataroot ./datasets/sjtuRoad \
                                 --dataset road \
                                 --cfg_file lib/configs/resnext101_32x4d_sjtuRoad_class \
                                 --load_ckpt ../VNL_Weight_Pretrained/kitti_eigen.pth \
-                                --epoch 80
+                                --epoch 30
                                 # --resume \
