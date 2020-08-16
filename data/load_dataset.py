@@ -3,6 +3,7 @@ import importlib
 from lib.utils.logging import setup_logging
 logger = setup_logging(__name__)
 
+
 class CustomerDataLoader():
     def __init__(self, opt):
         self.opt = opt
@@ -11,7 +12,8 @@ class CustomerDataLoader():
             self.dataset,
             batch_size=opt.batchsize,
             shuffle=True if 'train' in opt.phase else False,
-            num_workers=opt.thread)
+            num_workers=opt.thread,
+            drop_last=True)
 
     def load_data(self):
         return self
@@ -24,6 +26,7 @@ class CustomerDataLoader():
             if i * self.opt.batchsize >= float("inf"):
                 break
             yield data
+
 
 def create_dataset(opt):
     dataset = find_dataset_lib(opt.dataset)()
@@ -47,7 +50,8 @@ def find_dataset_lib(dataset_name):
         if name.lower() == target_dataset_name.lower():
             dataset = cls
     if dataset is None:
-        logger.info("In %s.py, there should be a class name that matches %s in lowercase." % (
-        dataset_filename, target_dataset_name))
+        logger.info(
+            "In %s.py, there should be a class name that matches %s in lowercase."
+            % (dataset_filename, target_dataset_name))
         exit(0)
     return dataset
