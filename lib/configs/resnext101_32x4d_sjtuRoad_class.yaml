@@ -24,7 +24,7 @@ DATASET:
   RGB_PIXEL_VARS: (0.48179955, 0.81054045, 0.51326655)
   # Scale the depth map
   DEPTH_SCALE: 65536.0
-  CROP_SIZE: (768, 1280) # (height, width)
+  CROP_SIZE: (385, 513) # (768, 1280) # (height, width)
   # Minimum depth after data augmentation
   DEPTH_MIN: 0.005
   # Maximum depth
