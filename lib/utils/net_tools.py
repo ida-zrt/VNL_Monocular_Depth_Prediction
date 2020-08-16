@@ -23,6 +23,7 @@ def get_func(func_name):
             return globals()[parts[0]]
         # Otherwise, assume we're referencing a module under modeling
         module_name = 'lib.models.' + '.'.join(parts[:-1])
+        logger.info('%s Imported!', module_name)
         module = importlib.import_module(module_name)
         return getattr(module, parts[-1])
     except Exception:
