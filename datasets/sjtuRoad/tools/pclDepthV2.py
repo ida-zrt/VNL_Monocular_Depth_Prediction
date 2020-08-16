@@ -9,13 +9,13 @@ from utils.depthConversion import *
 import numpy as np
 
 # global settings
-display_depth = True
-save_depth = False
-save_depth_c = True
+display_depth = False
+save_depth = True
+save_depth_c = False
 pause = True
 maxDepth = 280
-outputSize = (2560, 768 * 2)
-outputRoi = (0, 0, 2560, 768 * 2)
+outputSize = (2560, 768)
+outputRoi = (0, 0, 2560, 768)
 
 # 标定文件
 calib_path = './calibfiles/20200622_122024_autoware_lidar_camera_calibration.yaml'

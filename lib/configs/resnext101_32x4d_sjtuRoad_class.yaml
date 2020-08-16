@@ -1,0 +1,41 @@
+MODEL:
+  INIT_TYPE: 'xavier'
+  ENCODER: 'resnext101_32x4d_body_stride16'
+  MODEL_REPOSITORY: 'datasets/pretrained_model'
+  PRETRAINED_WEIGHTS: 'resnext101_32x4d.pth'
+  LOAD_IMAGENET_PRETRAINED_WEIGHTS: False
+  RESNET_BOTTLENECK_DIM: [64, 256, 512, 1024, 2048]
+  RESNET_BLOCK_DIM: [64, 64, 128, 256, 512]
+
+  # Configure the decoder
+  FCN_DIM_IN: [512, 256, 256, 256, 256, 256]
+  FCN_DIM_OUT: [256, 256, 256, 256, 256]
+  LATERAL_OUT: [512, 256, 256, 256]
+  # Configure input and output channel of the model
+  ENCODRE_INPUT_C: 3
+  DECODER_OUTPUT_C: 100
+  FREEZE_BACKBONE_BN: False
+  PREDICTION_METHOD: 'classification'
+
+
+DATASET:
+  NAME: "road"
+  RGB_PIXEL_MEANS: (0.41212096, 0.42906688, 0.37906236)
+  RGB_PIXEL_VARS: (0.48179955, 0.81054045, 0.51326655)
+  # Scale the depth map
+  DEPTH_SCALE: 65536.0
+  CROP_SIZE: (768, 1280) # (height, width)
+  # Minimum depth after data augmentation
+  DEPTH_MIN: 0.005
+  # Maximum depth
+  DEPTH_MAX: 1.0
+  FOCAL_Y: 2.1531e+03
+  FOCAL_X: 2.1624e+03
+  WCE_LOSS_WEIGHT: 0.5
+  OPTICAL_CENTER: (1.25654e+03, 7.719e+02)
+
+TRAIN:
+  VAL_STEP: 2
+  SNAPSHOT_ITERS: 1000
+  EPOCH: 100
+  BATCHSIZE: 4
