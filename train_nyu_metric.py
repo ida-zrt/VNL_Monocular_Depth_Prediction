@@ -45,6 +45,9 @@ def train(train_dataloader,
         # if data.size[0] == 1:
         #     print('dataError, only on in batch, continued')
         #     continue
+        if data['A'].shape == 1:
+            print('dataError, only 1 pic in batch, ignored')
+            continue
         if ignore_step != -1 and i > epoch_steps - ignore_step:
             return
         scheduler.step()  # decay lr every iteration
