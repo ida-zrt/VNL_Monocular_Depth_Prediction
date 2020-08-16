@@ -135,7 +135,7 @@ class ASPP_block(nn.Module):
         self.globalpool_bn = nn.BatchNorm2d(self.dim_out, momentum=0.5)
 
     def forward(self, x):
-        print("input shape of aspp block", x.shape)
+        # print("input shape of aspp block", x.shape)
         x1 = self.aspp_conv1x1(x)
         x1 = self.aspp_bn1x1(x1)
         x2 = self.aspp_conv3_1(x)
@@ -147,7 +147,7 @@ class ASPP_block(nn.Module):
 
         x5 = self.globalpool(x)
         x5 = self.globalpool_conv1x1(x5)
-        print("input shape of aspp bn block", x.shape)
+        # print("input shape of aspp bn block", x.shape)
         # x5 = self.globalpool_bn(x5)
         w, h = x1.size(2), x1.size(3)
         x5 = F.upsample(input=x5, size=(w, h), mode='bilinear', align_corners=True)
