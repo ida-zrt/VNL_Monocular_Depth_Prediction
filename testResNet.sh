@@ -17,11 +17,11 @@ python -u test_nyu_metric.py --dataroot ./datasets/sjtuRoad \
                             --cfg_file lib/configs/resnext101_32x4d_sjtuRoad_class \
                             --load_ckpt ../VNL_Weight_Pretrained/kitti_eigen.pth
 
-# echo "*************************************************"
-# echo "Performance of model tuned with sjtuRoad dataset"
-# echo "*************************************************"
+echo "*************************************************"
+echo "Performance of model tuned with sjtuRoad dataset"
+echo "*************************************************"
 
-# python -u test_nyu_metric.py --dataroot ./datasets/sjtuRoad \
-#                             --dataset road \
-#                             --cfg_file lib/configs/resnext101_32x4d_sjtuRoad_class \
-#                             --load_ckpt ./outputs/
+python -u test_nyu_metric.py --dataroot ./datasets/sjtuRoad \
+                            --dataset road \
+                            --cfg_file lib/configs/resnext101_32x4d_sjtuRoad_class \
+                            --load_ckpt ./outputs/Aug16-22-37-14_node3/ckpt/final.pth
