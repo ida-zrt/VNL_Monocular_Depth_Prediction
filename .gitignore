@@ -8,4 +8,5 @@ log*
 train.txt
 test.txt
 *.pth
+VNL_LossTest.py
 
