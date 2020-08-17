@@ -10,11 +10,11 @@
 #SBATCH --gres=gpu:2
 module load anaconda3/2019.07
 source activate VNL
-python  ./test_any_images.py \
-		--dataroot    ./ \
-		--dataset     any \
-		--cfg_file     lib/configs/resnext101_32x4d_sjtuRoad_class \
-		--load_ckpt   ../VNL_Weight_Pretrained/kitti_eigen.pth
+# python  ./test_any_images.py \
+# 		--dataroot    ./ \
+# 		--dataset     any \
+# 		--cfg_file     lib/configs/resnext101_32x4d_sjtuRoad_class \
+# 		--load_ckpt   ../VNL_Weight_Pretrained/kitti_eigen.pth
 
 python  ./test_any_images.py \
 		--dataroot    ./ \
