@@ -1,5 +1,3 @@
-# "./lib/configs/resnext101_32x4d_sjtuRoad_class.yaml"
-# "./outputs/Aug16-22-37-14_node3/ckpt/final.pth"
 #!/bin/bash
 #SBATCH -J VNL_Train
 #SBATCH -p gpu
@@ -8,6 +6,9 @@
 #SBATCH --error=log.%j.err
 #SBATCH -t 30:00:00
 #SBATCH --gres=gpu:2
+# "./lib/configs/resnext101_32x4d_sjtuRoad_class.yaml"
+# "./outputs/Aug16-22-37-14_node3/ckpt/final.pth"
+
 module load anaconda3/2019.07
 source activate VNL
 # python  ./test_any_images.py \
