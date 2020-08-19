@@ -17,7 +17,7 @@ vnl_loss = VNL_Loss(fx,
                     delta_diff_y=5 / 280,
                     delta_diff_z=5 / 280,
                     z_thres=0,
-                    sample_ratio=0.25)
+                    sample_ratio=0.05)
 img1 = img1.reshape((1, 1, img1.shape[0], img1.shape[1]))
 img2 = np.random.random(size=img1.shape)
 

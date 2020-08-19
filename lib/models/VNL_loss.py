@@ -17,7 +17,7 @@ class VNL_Loss(nn.Module):
                  delta_diff_y=0.01,
                  delta_diff_z=0.01,
                  z_thres=0.0001,
-                 sample_ratio=0.15,
+                 sample_ratio=0.10,
                  only_valid=True):
         super(VNL_Loss, self).__init__()
         # camera params to reconstruct 3D with depth
