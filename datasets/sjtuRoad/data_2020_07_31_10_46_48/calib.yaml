@@ -1,0 +1,33 @@
+%YAML:1.0
+---
+CameraMat: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 2.1624000000000001e+03, 0., 1.2565400000000000e+03, 0.,
+       2.1530999999999999e+03, 7.7198969999999997e+02, 0., 0., 1. ]
+DistCoeff: !!opencv-matrix
+   rows: 1
+   cols: 5
+   dt: d
+   data: [ -7.2909999999999997e-01, 7.5480000000000003e-01, 0., 0., 0. ]
+# Rotation Vector from lidar to camera(Rodrigues form)
+rvec: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.8708510966126577e-01, 2.7867675188265212e-01,
+       -1.5544687491884372e+00 ]
+# Translation Vector from lidar to camera
+tvec: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ -5.0002603771422338e-01, -3.7698181749979115e-01,
+       8.0539294971845887e-01 ]
+ImageSize: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: i
+   data: [ 2560, 1536 ]
+ReprojectionError: 3.3615701224939163e+00

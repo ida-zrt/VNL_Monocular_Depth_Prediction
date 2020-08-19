@@ -3,7 +3,7 @@
 *.png
 *.pyc
 *.vscode
-datasets/*
+datasets/sjtuRoad/tools/calibfiles/*
 log*
 train.txt
 test.txt
