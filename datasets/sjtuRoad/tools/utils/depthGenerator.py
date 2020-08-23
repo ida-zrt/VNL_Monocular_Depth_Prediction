@@ -26,17 +26,15 @@ class depthGenterator():
         depthColoredPath = self.pclDir + '../depthColored'
         img_path = self.pclDir + '../pic/'
         compare_path = self.pclDir + '../compare/'
+        depth_raw = self.pclDir + '../depthRaw/'
 
+        paths = [
+            depth_path, depthColoredPath, img_path, compare_path, depth_raw
+        ]
         # create dirs
-        if not os.path.exists(depth_path):
-            os.makedirs(depth_path)
-        if not os.path.exists(img_path):
-            os.makedirs(img_path)
-
-        if not os.path.exists(depthColoredPath):
-            os.makedirs(depthColoredPath)
-        if not os.path.exists(compare_path):
-            os.makedirs(compare_path)
+        for path in paths:
+            if not os.path.exists(path):
+                os.makedirs(path)
 
     def clear(self, all=False):
         depthColoredPath = self.pclDir + '../depthColored'
@@ -67,6 +65,7 @@ class depthGenterator():
                   interp=True,
                   coloeredCompare=False,
                   interpCompare=True,
+                  saveRaw=True,
                   **kwargs):
         self.makeSaveDirs()
         outputRoi = kwargs.get('outputRoi', None)
@@ -89,6 +88,13 @@ class depthGenterator():
             depthRaw = getDepthFromCloud(cloudPts, self.rvec, self.tvec,
                                          self.cameraMat, self.distCoeff,
                                          self.imgSize, self.maxDepth)
+            if saveRaw:
+                x, y, w, h = outputRoi
+                depthRawSave = depthRaw[y:y + h, x:x + w]
+                depthRawSave = cv.resize(depthRawSave, outputSize)
+                fnameRaw = fname.replace('depth', 'depthRaw')
+                cv.imwrite(fnameRaw, depthRawSave.astype(np.uint16))
+                print("{} saved!!".format(fnameRaw))
 
             depthToSave = depthRaw
             x, y, w, h = outputRoi

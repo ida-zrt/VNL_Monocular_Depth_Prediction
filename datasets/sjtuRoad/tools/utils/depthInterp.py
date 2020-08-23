@@ -23,7 +23,7 @@ def linearFit(X, Y, ValidDepth, xs, ys, cell):
     return depths
 
 
-def bilinearFit(X, Y, ValidDepth, xs, ys):
+def newFit(X, Y, ValidDepth, xs, ys):
     if ValidDepth.shape[0] <= 3:
         return None
     # model: z = a + b*u + c*v + d*u*v
@@ -68,7 +68,7 @@ def _cellInterp(cell, mode='bilinear'):
             depths = linearFit(X, Y, ValidDepth, xs2, ys2, cell)
         elif mode.lower() == 'bilinear':
             try:
-                depths = bilinearFit(X, Y, ValidDepth, xs2, ys2, cell)
+                depths = newFit(X, Y, ValidDepth, xs2, ys2, cell)
             except:
                 depths = linearFit(X, Y, ValidDepth, xs2, ys2, cell)
         if depths is None:
@@ -125,9 +125,9 @@ def interpDepthImg(depthImg, ksize=(3, 5), method='nearest', fill_value=0):
 
 
 if __name__ == "__main__":
-    sparseDepth = cv.imread('../data_2020_07_29_17_44_03/depth/depth0002.png',
+    sparseDepth = cv.imread('../data_2020_07_31_10_46_48/depthRaw/depthRaw0002.png',
                             -1)
-    depth = fitDepthImg(sparseDepth, (3, 5))
+    depth = fitDepthImg(sparseDepth, (8, 8))
     cv.imwrite('./depthFitting.png', depth.astype(np.uint16))
     depth2 = interpDepthImg(sparseDepth, 0)
     cv.imwrite('./pureInterp.png', depth2.astype(np.uint16))

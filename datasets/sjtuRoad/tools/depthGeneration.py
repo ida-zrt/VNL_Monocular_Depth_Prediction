@@ -19,7 +19,7 @@ outputSize = (2560, 768)
 outputRoi = (0, 0, 2560, 768)
 
 # 数据文件夹
-dataDirs = glob.glob('../data*')
+dataDirs = glob.glob('../data*')[::-1]
 
 for dataDir in dataDirs:
     generator = dG(dataDir, 200)

@@ -23,8 +23,14 @@ source activate VNL
 # 		--cfg_file     lib/configs/resnext101_32x4d_sjtuRoad_class \
 # 		--load_ckpt   ./outputs/Aug16-22-37-14_node3/ckpt/final.pth
 
+# python  ./test_any_images.py \
+# 		--dataroot    ./ \
+# 		--dataset     any \
+# 		--cfg_file     lib/configs/mobilenet_v2_sjtuRoad_class \
+# 		--load_ckpt   ./outputs/Aug20-02-39-59_node1/ckpt/final.pth
+
 python  ./test_any_images.py \
 		--dataroot    ./ \
 		--dataset     any \
-		--cfg_file     lib/configs/mobilenet_v2_sjtuRoad_class \
-		--load_ckpt   ./outputs/Aug20-02-39-59_node1/ckpt/final.pth
+		--cfg_file     lib/configs/resnext101_32x4d_sjtuRoad_class \
+		--load_ckpt   ./outputs/Aug23-10-21-13_node1/ckpt/final.pth
