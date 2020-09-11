@@ -24,6 +24,7 @@ dataDirs = glob.glob('../data*')[::-1]
 for dataDir in dataDirs:
     generator = dG(dataDir, 200)
     generator.clear(all=True)
-    generator.saveDepth(interpCompare=False,
+    generator.saveDepth(coloeredCompare=False,
                         outputRoi=outputRoi,
-                        outputSize=outputSize)
+                        outputSize=outputSize,
+                        method='nearest')

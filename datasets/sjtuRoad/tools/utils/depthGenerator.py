@@ -64,9 +64,13 @@ class depthGenterator():
     def saveDepth(self,
                   interp=True,
                   coloeredCompare=False,
-                  interpCompare=True,
                   saveRaw=True,
                   **kwargs):
+        # kwargs:
+        # outputROI: output roi. Default None
+        # outputSize: output size, crop before resize!! Default None
+        # method: method used for interpolation, 'linear', 'cubic', 'nearest'. Default linear
+        # ksize: kernel size for fitting local plain. Default 0
         self.makeSaveDirs()
         outputRoi = kwargs.get('outputRoi', None)
         outputSize = kwargs.get('outputSize', None)
@@ -88,6 +92,8 @@ class depthGenterator():
             depthRaw = getDepthFromCloud(cloudPts, self.rvec, self.tvec,
                                          self.cameraMat, self.distCoeff,
                                          self.imgSize, self.maxDepth)
+
+            # save depth data generated from lidar points
             if saveRaw:
                 x, y, w, h = outputRoi
                 depthRawSave = depthRaw[y:y + h, x:x + w]
@@ -100,32 +106,23 @@ class depthGenterator():
             x, y, w, h = outputRoi
             depthToSave = depthToSave[y:y + h, x:x + w]
 
+            # interp the depth data from lidar point depth
             if interp:
                 ksize = kwargs.get('ksize', 0)
-                method = kwargs.get('method', 'nearest')
+                method = kwargs.get('method', 'linear')
                 depthToSave = interpDepthImg(depthToSave, ksize, method)
-                if interpCompare:
-                    compareImg = cv.addWeighted(img, 0.3,
-                                                depthToSave / 65536 * 255, 1,
-                                                0)
-                    if outputRoi is None or outputSize is None:
-                        pass
-                    else:
-                        x, y, w, h = outputRoi
-                        compareImg = compareImg[y:y + h, x:x + w]
-                    fname4 = fname.replace('depth', 'compare')
-                    cv.imwrite(fname4, compareImg)
 
             if outputRoi is None or outputSize is None:
                 pass
             else:
                 x, y, w, h = outputRoi
-                img = img[y:y + h, x:x + w]
-                img = cv.resize(img, outputSize)
+                imgS = img[y:y + h, x:x + w]
+                imgS = cv.resize(imgS, outputSize)
                 depthToSave = depthToSave[y:y + h, x:x + w]
                 depthToSave = cv.resize(depthToSave, outputSize)
+            # save depth and train image
             cv.imwrite(fname, depthToSave.astype(np.uint16))
-            cv.imwrite(pic.replace('frame', 'pic'), img)
+            cv.imwrite(pic.replace('frame', 'pic'), imgS)
             print("{} saved!!".format(fname))
 
             if coloeredCompare:

@@ -87,6 +87,8 @@ def fitDepthImg(sparseDepth, ksize, mode='bilinear'):
         return sparseDepth
     if len(ksize) == 1:
         ksize = (ksize, ksize)
+    if ksize[0] == 0 or ksize[1] == 0:
+        return sparseDepth
     d1 = 0
     d2 = 0
     if sparseDepth.shape[0] % ksize[0]:
@@ -95,8 +97,8 @@ def fitDepthImg(sparseDepth, ksize, mode='bilinear'):
         d2 = ksize[1] - sparseDepth.shape[1] % ksize[1]
 
     sDepth = np.pad(sparseDepth, ((0, d1), (0, d2)), 'constant').astype(float)
-    yn = sDepth.shape[0] / ksize[0]
-    xn = sDepth.shape[1] / ksize[1]
+    yn = int(sDepth.shape[0] / ksize[0])
+    xn = int(sDepth.shape[1] / ksize[1])
     for y in range(yn):
         for x in range(xn):
             cell = sDepth[y * ksize[0]:(y + 1) * ksize[0],
@@ -109,7 +111,7 @@ def fitDepthImg(sparseDepth, ksize, mode='bilinear'):
     return sDepth
 
 
-def interpDepthImg(depthImg, ksize=(3, 5), method='nearest', fill_value=0):
+def interpDepthImg(depthImg, ksize=(3, 5), method='linear', fill_value=0):
     depthImg = fitDepthImg(depthImg, ksize)
     points = np.array((depthImg != 0).nonzero()).T
     validDepth = depthImg[depthImg != 0]

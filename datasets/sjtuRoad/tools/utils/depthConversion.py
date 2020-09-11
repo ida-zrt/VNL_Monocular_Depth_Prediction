@@ -26,14 +26,14 @@ def getDepthFromCloud(cloudPoints,
 
     depthImg = np.zeros(imgSize)
     depthImg[imgPoints[:, 0], imgPoints[:, 1]] = depth
-    print('depth mean is {} m'.format(np.mean(depth)))
-    print('depth var is {} m2'.format(np.var(depth)))
-    print('depth max is {} m'.format(np.max(depth)))
-    print('depth min is {} m'.format(np.min(depth[depth != 0])))
-    crit = 2 * np.sqrt(np.var(depth)) + np.mean(depth)
-    percent = np.sum(depth < crit) / np.sum(np.ones_like(depth))
-    print('{:.2f} %% depth is below {} m'.format(percent * 100, crit))
-    print('')
+    # print('depth mean is {} m'.format(np.mean(depth)))
+    # print('depth var is {} m2'.format(np.var(depth)))
+    # print('depth max is {} m'.format(np.max(depth)))
+    # print('depth min is {} m'.format(np.min(depth[depth != 0])))
+    # crit = 2 * np.sqrt(np.var(depth)) + np.mean(depth)
+    # percent = np.sum(depth < crit) / np.sum(np.ones_like(depth))
+    # print('{:.2f} %% depth is below {} m'.format(percent * 100, crit))
+    # print('')
     depthImg = (np.transpose(depthImg) * 65536 / maxDepth).astype(np.uint16)
     return depthImg
 
